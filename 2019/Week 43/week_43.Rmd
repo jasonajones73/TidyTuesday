@@ -1,0 +1,56 @@
+---
+title: '#TidyTuesday Week 43'
+author: "Jason Jones"
+date: "10/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# load packages
+library(tidyverse)
+library(extrafont)
+
+theme_set(theme_minimal() +
+            theme(text = element_text(family = "Segoe UI")))
+```
+
+
+```{r}
+# load data
+horror_movies <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-22/horror_movies.csv")
+
+```
+
+```{r}
+horror_movies %>%
+  ggplot(aes(review_rating)) +
+  geom_histogram(bins = 10)
+```
+
+
+```{r}
+with_reviews <- horror_movies %>%
+  filter(is.na(review_rating) != TRUE)
+
+mean(with_reviews$review_rating > 7)
+```
+
+
+
+
+```{r}
+x <- horror_movies %>%
+  mutate(cast = strsplit(cast, split = "|", fixed = TRUE)) %>%
+  unnest(cols = cast) %>%
+  group_by(cast) %>%
+  count(.drop = FALSE) %>%
+  filter(n > 5)
+  summarise(avg_rat = mean(review_rating, na.rm = TRUE)) %>%
+  ungroup()
+```
+
