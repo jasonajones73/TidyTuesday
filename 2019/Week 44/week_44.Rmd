@@ -1,0 +1,201 @@
+---
+title: "#TidyTuesday Week 44"
+author: "Jason Jones"
+date: "11/2/2019"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi = 320, out.width = "100%",
+                      warning = FALSE, fig.height = 10, message = FALSE)
+```
+
+# Load Packages
+
+```{r}
+library(tidyverse)
+library(extrafont)
+library(sf)
+library(leaflet)
+
+```
+
+# Default Plot Theme
+
+```{r}
+theme_set(theme_minimal() +
+            theme(text = element_text(family = "Segoe UI")))
+```
+
+# Load Data
+
+```{r}
+nyc_squirrels <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-29/nyc_squirrels.csv")
+
+```
+
+# Cluster the Squirrels
+
+```{r}
+clustering <- nyc_squirrels %>%
+  select(long, lat) %>%
+  kmeans(centers = 10)
+
+```
+
+# Centers
+
+```{r}
+cluster_centers <- clustering$centers %>%
+  as_tibble() %>%
+  mutate(cluster = row_number()) %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4269)
+
+```
+
+
+# Merging
+
+```{r}
+nyc_squirrels_clustered <- nyc_squirrels %>%
+  mutate(cluster = clustering$cluster) %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4269)
+
+```
+
+
+# Mapping
+
+```{r}
+pal <- colorFactor(palette = "Spectral", domain = nyc_squirrels_clustered$cluster)
+
+nyc_squirrels_clustered %>%
+  leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers(color = ~pal(cluster),
+                   stroke = FALSE,
+                   fillOpacity = 1)
+```
+
+
+
+
+
+
+
+
+
+
+Squirrell finding Shiny app
+
+Select AM or PM
+
+Squirrell is...
+
+  Activities
+    Running
+    Chasing
+    Climbing
+    Eating
+    Foraging
+  Sounds
+    Kuks
+    Quaas
+    Moans
+    
+    
+```{r}
+selection <- c("running", "chasing", "climbing", "kuks", "quaas")
+
+paste(selection, "== TRUE &") %>% str_remove(pattern = )
+
+```
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Convert to Spatial
+
+```{r}
+squirrels_sf <- nyc_squirrels %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4269)
+
+```
+
+# Test it Out
+
+```{r}
+squirrels_sf %>%
+  ggplot() +
+  geom_sf()
+```
+
+
+
+```{r}
+squirrels_sf %>%
+  ggplot() +
+  geom_sf(aes(color = primary_fur_color, fill = primary_fur_color))
+
+```
+
+
+```{r}
+
+
+
+
+x <- nyc_squirrels %>%
+  select(long, lat) %>%
+  kmeans(centers = 10)
+
+centers <- x$centers %>%
+  as_tibble() %>%
+  mutate(cluster = row_number()) %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4269)
+
+nyc_squirrels_clustered <- nyc_squirrels %>%
+  mutate(cluster = x$cluster) %>%
+  st_as_sf(coords = c("long", "lat"), crs = 4269)
+
+nyc_squirrels_clustered %>%
+  ggplot() +
+  geom_sf(aes(color = as.character(cluster))) +
+  geom_sf(data = centers, size = 5, color = "black")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
