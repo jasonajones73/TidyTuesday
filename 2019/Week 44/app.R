@@ -52,7 +52,7 @@ ui <- navbarPage(title = "Rats in Cute Outfits",
                              tags$h3("Here are five suggestions for where you should stand or sit:\n"),
                              tags$em(tags$p("You may need to zoom out to see all five markers!")),
                              leafletOutput(outputId = "map",
-                                           height = 800)),
+                                           height = 600) %>% withSpinner(type = 1)),
                       column(width = 1)
                     )
                     
