@@ -1,0 +1,89 @@
+---
+title: "Week 45"
+author: "Jason Jones"
+date: "11/12/2019"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(tigris)
+library(sf)
+
+```
+
+
+```{r}
+commute_mode <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-11-05/commute.csv")
+
+```
+
+
+```{r}
+north_carolina <- commute_mode %>%
+  filter(state == "North Carolina")
+```
+
+
+```{r}
+nc_places <- places(state = 37) %>%
+  st_as_sf() %>%
+  st_transform(crs = 4326) %>%
+  st_centroid()
+```
+
+
+```{r}
+nc_counties <- counties(state = 37) %>%
+  st_as_sf() %>%
+  st_transform(crs = 4326)
+```
+
+
+```{r}
+merged <- nc_places %>%
+  left_join(north_carolina, by = c("NAMELSAD" = "city"))
+
+merged %>%
+  filter(mode == "Bike") %>%
+  ggplot() +
+  geom_sf(data = nc_counties, color = "white",
+          fill = NA, size = 0.25) +
+  geom_sf(aes(size = n, color = n)) +
+  theme(panel.background = element_rect(fill = "black"),
+        panel.grid = element_blank()) +
+  scale_color_distiller(type = "div", palette = "Spectral", guide = "none") +
+  scale_size(guide = "none")
+
+ggsave(filename = "plot.png", device = "png", width = 12, height = 6, dpi = 320)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
