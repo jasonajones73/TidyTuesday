@@ -51,12 +51,12 @@ for_map <- bar_pts %>%
   
 
 # Plot
-ggplot() +
+plt <- ggplot() +
   geom_sf(data = philly_roads$osm_lines, color = alpha("white", 0.2)) +
   geom_point(data = for_map, aes(X, Y, size = total_fine), color = "yellow", alpha = 0.5) +
   scale_size(guide = FALSE) +
   labs(title = "BAR PARKING",
-       subtitle = "Which bars have the most tickets issued near them?",
+       subtitle = "Which bars in Philadelphia, PA have the highest total\nparking ticket fines?",
        caption = "Author: Jason Jones\nSource: https://www.opendataphilly.org/") +
   cowplot::theme_map() +
   theme(panel.grid = element_blank(),
@@ -68,5 +68,5 @@ ggplot() +
         plot.margin = unit(rep(0.25, 4), units = "in"))
 
 
-ggsave(filename = "plot.png", device = "png", path = "2019/Week 49/",
+ggsave(filename = "plot.png", plot = plt, device = "png", path = "2019/Week 49/",
        width = 5, height = 10, dpi = 320)
