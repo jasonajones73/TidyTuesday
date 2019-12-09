@@ -69,4 +69,4 @@ plt <- ggplot() +
 
 
 ggsave(filename = "plot.png", plot = plt, device = "png", path = "2019/Week 49/",
-       width = 5, height = 10, dpi = 320)
+       width = 10, height = 12, dpi = 320)
