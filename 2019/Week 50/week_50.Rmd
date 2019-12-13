@@ -1,35 +1,92 @@
-# Load packages
+---
+title: "#TidyTuesday Week 50 Plot Replicas"
+author: "Jason Jones"
+date: "12/12/2019"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Documenation
+
+Plots are replicated based on Battling Infectious Diseases in the 20th Century: The Impact of Vaccines by Tynan DeBold and Dov Friedman.
+
+You can find the graphics here: http://graphics.wsj.com/infectious-diseases-and-vaccines/?mc_cid=711ddeb86e
+
+# Load Packages
+
+```{r}
 library(tidyverse)
 library(highcharter)
 library(extrafont)
+```
 
 # Load data
+
+```{r}
 diseases <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-10/diseases.csv")
+```
 
-# Define disease
+
+# Define Disease
+
+```{r}
 the_disease <- "Measles"
+```
 
-# Transform data for chart
+# Transform Data
+
+```{r}
 dat <- diseases %>%
   filter(disease == the_disease) %>%
   mutate(rate = round(count / (population/100000), digits = 2)) %>%
   select(state, year, rate) %>%
   mutate(rate = replace_na(rate, 0))
-  
+```
+
+# ggplot Example
+
+```{r}
 # Create color palette from source chart for ggplot
 chart.colors <- colorRampPalette(c("#e7f0fa", "#c9e2f6", "#95cbee", "#0099dc", "#4ab04a", "#ffd73e", "#eec73a", "#e29421", "#e29421", "#f05336", "#ce472e"), bias = 2.6)
 
-# Create color stops for highchart objects
+dat %>%
+  mutate(state = reorder(state, desc(state))) %>%
+  ggplot(aes(year, state, fill = rate)) +
+  geom_tile(color = "white", size = 0.35) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_fill_gradientn("Rate", colors = chart.colors(16), na.value = 'grey') +
+  geom_vline(xintercept = 1963, col = "black") +
+  theme_minimal() + 
+  theme(panel.grid = element_blank()) +
+  coord_cartesian(clip = 'off') +
+  ggtitle(the_disease) +
+  ylab("") +
+  xlab("") +  
+  theme(legend.position = "bottom", text = element_text(size = 8, family = "Arial")) + 
+  annotate(geom = "text", x = 1963.5, y = 52.5, label = "Vaccine introduced", size = 3, hjust = 0)
+```
+
+# Create Color Stops
+
+```{r}
 stops <- data.frame(q = c(0, 0.01, 0.02, 0.03, 0.09, 0.1, 0.15, 0.25, 0.4, 0.5, 1),
                     c = c("#e7f0fa", "#c9e2f6", "#95cbee", "#0099dc", "#4ab04a", "#ffd73e", "#eec73a", "#e29421", "#e29421", "#f05336", "#ce472e"),
                     stringsAsFactors = FALSE)
 stops <- list_parse2(stops)
+```
 
-# Create highchart object  
-# IMPORTANT NOTE: plotLines option only accepts a list within a list
-highchart() %>%
+# Create Highchart Object
+
+```{r}
+highchart(height = 550) %>%
   hc_add_series(data = dat, type = "heatmap", name = "Measles Rate",
-                mapping = hcaes(x = year, y = state, value = rate, name = state)) %>%
+                mapping = hcaes(x = year, y = state, value = rate, name = state),
+                borderColor = "white", borderWidth = 1) %>%
   hc_yAxis(reversed = TRUE,
            startOnTick = FALSE,
            categories = unique(dat$state),
@@ -87,8 +144,11 @@ highchart() %>%
                         fontStyle = "normal",
                         fontSize = 20),
            align = "left")
+```
 
-################################################################################
+# Another One
+
+```{r}
 # Define disease
 the_disease <- "Hepatitis A"
 
@@ -101,9 +161,10 @@ dat <- diseases %>%
 
 # Create highchart object  
 # IMPORTANT NOTE: plotLines option only accepts a list within a list
-highchart() %>%
-  hc_add_series(data = dat, type = "heatmap", name = "Measles Rate",
-                mapping = hcaes(x = year, y = state, value = rate, name = state)) %>%
+highchart(height = 550) %>%
+  hc_add_series(data = dat, type = "heatmap", name = "Hepatitis A Rate",
+                mapping = hcaes(x = year, y = state, value = rate, name = state),
+                borderColor = "white", borderWidth = 1) %>%
   hc_yAxis(reversed = TRUE,
            startOnTick = FALSE,
            categories = unique(dat$state),
@@ -161,8 +222,11 @@ highchart() %>%
                         fontStyle = "normal",
                         fontSize = 20),
            align = "left")
+```
 
-################################################################################
+# And Another One
+
+```{r}
 # Define disease
 the_disease <- "Polio"
 
@@ -175,9 +239,10 @@ dat <- diseases %>%
 
 # Create highchart object  
 # IMPORTANT NOTE: plotLines option only accepts a list within a list
-highchart() %>%
-  hc_add_series(data = dat, type = "heatmap", name = "Measles Rate",
-                mapping = hcaes(x = year, y = state, value = rate, name = state)) %>%
+highchart(height = 550) %>%
+  hc_add_series(data = dat, type = "heatmap", name = "Polio Rate",
+                mapping = hcaes(x = year, y = state, value = rate, name = state),
+                borderColor = "white", borderWidth = 1) %>%
   hc_yAxis(reversed = TRUE,
            startOnTick = FALSE,
            categories = unique(dat$state),
@@ -235,29 +300,5 @@ highchart() %>%
                         fontStyle = "normal",
                         fontSize = 20),
            align = "left")
+```
 
-
-
-
-
-
-
-
-
-
- # Original post ggplot object reference
-dat %>%
-  mutate(state = reorder(state, desc(state))) %>%
-  ggplot(aes(year, state, fill = rate)) +
-  geom_tile(color = "white", size = 0.35) +
-  scale_x_continuous(expand = c(0,0)) +
-  scale_fill_gradientn("Rate", colors = chart.colors(16), na.value = 'grey') +
-  geom_vline(xintercept = 1963, col = "black") +
-  theme_minimal() + 
-  theme(panel.grid = element_blank()) +
-  coord_cartesian(clip = 'off') +
-  ggtitle(the_disease) +
-  ylab("") +
-  xlab("") +  
-  theme(legend.position = "bottom", text = element_text(size = 8, family = "Arial")) + 
-  annotate(geom = "text", x = 1963.5, y = 52.5, label = "Vaccine introduced", size = 3, hjust = 0)
